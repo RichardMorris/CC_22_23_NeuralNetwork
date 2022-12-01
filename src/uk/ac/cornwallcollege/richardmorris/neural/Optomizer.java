@@ -23,6 +23,7 @@ public class Optomizer {
             candidates.add(weights);
         }
         output_values = new ArrayList<>(num_candidates);
+        test_data = new ArrayList<>(num_images);
 
     }
 
@@ -30,6 +31,15 @@ public class Optomizer {
         test_data.add(new InputAndTarget(pixels,target));
     }
 
+    public void printTargets() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Targets\t[");
+        for(var test:test_data) {
+            sb.append(String.format("%6.3f ",test.target()));
+        }
+        System.out.println(sb.toString());
+
+    }
     public List<Double> runTestsOn(List<Double> candidate) {
         List<Double> results = new ArrayList<>(test_data.size());
 
@@ -53,18 +63,30 @@ public class Optomizer {
         return dot_product;
     }
 
-    public List<Double> findBestFit() {
+    public Results findBestFit() {
         double bestFitValue = Double.NEGATIVE_INFINITY;
         List<Double> bestFitWeights = null;
-
+        List<Double> bestFitResults = null;
         for(var candidate : candidates) {
             var results = runTestsOn(candidate);
             double fitness = calcFitness(results);
             if(fitness > bestFitValue) {
                 bestFitWeights = candidate;
                 bestFitValue = fitness;
+                bestFitResults = results;
             }
         }
-        return bestFitWeights;
+        return new Results(bestFitWeights,bestFitValue, bestFitResults);
+    }
+
+    public void generateNextRound(List<Double> base_weights,double factor) {
+        for(int i=0;i<candidates.size();++i) {
+            List<Double> newWeights = new ArrayList<>();
+            for(double base_val : base_weights) {
+                double weight = base_val + (Math.random()-0.5) * factor;
+                newWeights.add(weight);
+            }
+            candidates.set(i,newWeights);
+        }
     }
 }

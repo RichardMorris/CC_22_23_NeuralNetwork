@@ -1,25 +1,39 @@
 package uk.ac.cornwallcollege.richardmorris.neural;
 
+import java.util.Arrays;
+
 public class Main {
     public static void main(String[] args) {
-        Neuron n0 = new Neuron(0);
-        System.out.println(n0.toString());
-        Neuron n1 = new Neuron(1);
-        System.out.println(n1.toString());
-        Neuron n2 = new Neuron(2);
-        System.out.println(n2.toString());
-        Neuron n3 = new Neuron(3);
-        System.out.println(n3.toString());
-        Neuron n4 = new Neuron(4);
-        System.out.println(n4.toString());
+        var nn = new NeuronNetwork(2,2);
+        var opt = new Optomizer(nn,10,16);
+        opt.setInputOutput(Arrays.asList(0.0,0.0,0.0,0.0), -0.1);
+        opt.setInputOutput(Arrays.asList(0.0,0.0,0.0,1.0), -0.1);
+        opt.setInputOutput(Arrays.asList(0.0,0.0,1.0,0.0), -0.1);
+        opt.setInputOutput(Arrays.asList(0.0,0.0,1.0,1.0), -0.1);
+        opt.setInputOutput(Arrays.asList(0.0,1.0,0.0,0.0), -0.1);
+        opt.setInputOutput(Arrays.asList(0.0,1.0,0.0,1.0), -0.1);
+        opt.setInputOutput(Arrays.asList(0.0,1.0,1.0,0.0), 1.0);
+        opt.setInputOutput(Arrays.asList(0.0,1.0,1.0,1.0), -0.1);
+        opt.setInputOutput(Arrays.asList(1.0,0.0,0.0,0.0), -0.1);
+        opt.setInputOutput(Arrays.asList(1.0,0.0,0.0,1.0), -0.1);
+        opt.setInputOutput(Arrays.asList(1.0,0.0,1.0,0.0), 1.0);
+        opt.setInputOutput(Arrays.asList(1.0,0.0,1.0,1.0), -0.1);
+        opt.setInputOutput(Arrays.asList(1.0,1.0,0.0,0.0), -0.1);
+        opt.setInputOutput(Arrays.asList(1.0,1.0,0.0,1.0), -0.1);
+        opt.setInputOutput(Arrays.asList(1.0,1.0,1.0,0.0), -0.1);
+        opt.setInputOutput(Arrays.asList(1.0,1.0,1.0,1.0), -0.1);
 
-        n1.add(n3);
-        n1.add(n4);
 
-        n2.add(n4);
+        opt.printTargets();
 
-        n3.add(n0);
-        n4.add(n0);
-        n1.fire();
+        double factor = 2.0;
+        for(int i=0; i< 10;++i) {
+            var res = opt.findBestFit();
+            System.out.println(res);
+
+            factor *= 0.5;
+            opt.generateNextRound(res.weights(), factor);
+        }
+
     }
 }
